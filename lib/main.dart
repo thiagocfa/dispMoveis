@@ -1,6 +1,16 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+import 'model/lista.dart';
+import 'model/usuarios.dart';
+
+void main() async {
+  //Registrar o Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: "listaFacil",
@@ -15,6 +25,18 @@ void main() {
       "/login": (context) => Login(),
     },
   ));
+
+/*   var db = FirebaseFirestore.instance;
+  db.collection("usuarios").add({"login": "thiago", "senha": "thiago"}); */
+
+/* db.collection("usuarios").doc("login00001").set(
+    {
+      "login": "thiago",
+      "senha": "thiago" 
+
+    }
+
+ ); */
 }
 
 ///// LOGIN
@@ -22,9 +44,25 @@ void main() {
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
+  static fromMap(Map<String, dynamic> data, String id) {}
 }
 
 class _LoginState extends State<Login> {
+  var db = FirebaseFirestore.instance;
+  List<Usuarios> lista = List();
+  StreamSubscription<QuerySnapshot> ouvinte;
+
+  @override
+  void initState() {
+    super.initState();
+    ouvinte?.cancel();
+    ouvinte = db.collection("usuarios").snapshots().listen((res) {
+      setState(() {
+        lista = res.docs.map((e) => Usuarios.fromMap(e.data(), e.id)).toList();
+      });
+    });
+  }
+
   var formkey = GlobalKey<FormState>();
 
   TextEditingController varLogin = TextEditingController();
@@ -141,9 +179,28 @@ class _LoginState extends State<Login> {
             ],
           ),
           onPressed: () {
+            String loginbanco = varLogin.text;
+            String senhabanco = varSenha.text;
+            bool validabanco = false;
             if (formkey.currentState.validate()) {
               setState(() {
-                Navigator.pushNamed(context, "/principal");
+                lista.forEach((element) {
+                  if (loginbanco == element.login &&
+                      senhabanco == element.senha) {
+                    validabanco = true;
+                  }
+                });
+
+                if (!validabanco) {
+                  varLogin.clear();
+                  varSenha.clear();
+                }
+
+                if (validabanco) {
+                  Navigator.pushNamed(context, "/principal");
+                  varLogin.clear();
+                  varSenha.clear();
+                }
               });
             }
           },
@@ -155,7 +212,12 @@ class _LoginState extends State<Login> {
 
 ///// PRINCIPAL
 
-class Principal extends StatelessWidget {
+class Principal extends StatefulWidget {
+  @override
+  _PrincipalState createState() => _PrincipalState();
+}
+
+class _PrincipalState extends State<Principal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -255,10 +317,20 @@ class _ListaState extends State<Lista> {
   var items = List<String>();
   List<bool> listacheckboxValue = new List<bool>();
 
+  var db = FirebaseFirestore.instance;
+  List<Listab> lista = List();
+  StreamSubscription<QuerySnapshot> ouvinte;
+
   @override
   void initState() {
     items.sort();
     super.initState();
+    ouvinte?.cancel();
+    ouvinte = db.collection("lista").snapshots().listen((res) {
+      setState(() {
+        lista = res.docs.map((e) => Listab.fromMap(e.data(), e.id)).toList();
+      });
+    });
   }
 
   @override
@@ -299,6 +371,7 @@ class _ListaState extends State<Lista> {
                 IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
+                    String itembanco = txtTarefa.text;
                     setState(() {
                       listacheckboxValue.add(false);
                       items.add(txtTarefa.text);
@@ -309,6 +382,7 @@ class _ListaState extends State<Lista> {
                           duration: Duration(seconds: 1),
                         ),
                       );
+                      db.collection("lista").add({"item": itembanco});
                     });
                   },
                 )
