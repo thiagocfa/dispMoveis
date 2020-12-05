@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "363992371158",
+    "project_id": "listafacil-d7429",
+    "storage_bucket": "listafacil-d7429.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363992371158:android:11860db22ffa0e8fcbde77",
+        "android_client_info": {
+          "package_name": "com.example.lista_facil"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363992371158-vejubqlmjh6repgst83f1u5p0c6g1ggm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqSr80eWbKgiYU4jWdus5oMCGP_Eg2ZZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363992371158-vejubqlmjh6repgst83f1u5p0c6g1ggm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
